@@ -10,8 +10,10 @@ class App extends Component {
     consulta:{},
     resultado:{}
   }
-  componentDidUpdate(){
-    this.consultarApi();
+  componentDidUpdate(prevProps, prevState){
+    if(prevState.consulta !== this.state.consulta){
+      this.consultarApi();
+    }
   }
   componentDidMount(){
     this.setState({
@@ -34,7 +36,9 @@ class App extends Component {
     .then(datos=>{
       this.setState({
         resultado: datos
+        
       })
+      // console.log(datos)
     })
     .catch(error=>{
       console.log(error)
@@ -54,12 +58,16 @@ class App extends Component {
     }
   }
   render() {
-    const error=this.state.error;
+    const {error}=this.state,
+          {cod}=this.state.resultado;
     let resultado;
     if (error){
       resultado=<Error mensaje="Ambos campos son obligatorios"/>
-    }else{
-      resultado=<Clima/>
+    }else if(cod==="404"){
+      resultado=<Error mensaje="Ciudad no encontrada"/>
+    }
+    else{
+      resultado=<Clima resultado={this.state.resultado}/>
     }
     return (
       <div className="app">
